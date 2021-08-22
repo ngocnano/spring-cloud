@@ -6,7 +6,6 @@ import com.ngoctm.photo.app.api.user.service.UsersService;
 import com.ngoctm.photo.app.api.user.share.UserDto;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

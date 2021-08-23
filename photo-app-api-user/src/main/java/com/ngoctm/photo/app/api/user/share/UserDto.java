@@ -1,6 +1,9 @@
 package com.ngoctm.photo.app.api.user.share;
 
+import com.ngoctm.photo.app.api.user.model.AlbumResponseModel;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class UserDto implements Serializable {
 
@@ -12,6 +15,15 @@ public class UserDto implements Serializable {
     private String password;
     private String encryptedPassword;
     private String userId;
+    private List<AlbumResponseModel> albums;
+
+    public List<AlbumResponseModel> getAlbums() {
+        return albums;
+    }
+
+    public void setAlbums(List<AlbumResponseModel> albums) {
+        this.albums = albums;
+    }
 
     public String getFirstName() {
         return firstName;

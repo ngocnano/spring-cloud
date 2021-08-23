@@ -1,28 +1,43 @@
 package com.ngoctm.photo.app.api.user.service;
 
+import com.ngoctm.photo.app.api.user.data.AlbumsServiceClient;
 import com.ngoctm.photo.app.api.user.data.UserEntity;
 import com.ngoctm.photo.app.api.user.data.UsersRepository;
+import com.ngoctm.photo.app.api.user.model.AlbumResponseModel;
 import com.ngoctm.photo.app.api.user.share.UserDto;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class UsersServiceImpl implements UsersService{
 
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     UsersRepository usersRepository;
 
     @Autowired
+    AlbumsServiceClient albumsServiceClient;
+
+    @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Autowired
+    Environment environment;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -46,6 +61,24 @@ public class UsersServiceImpl implements UsersService{
             throw new UsernameNotFoundException("Email not found");
         }
         UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
+        return userDto;
+    }
+
+    @Override
+    public UserDto getUserByUserId(String userId) {
+        logger.debug("get user by user id " + userId);
+        UserEntity userEntity = usersRepository.findByUserId(userId);
+        if(userEntity == null){
+            throw new UsernameNotFoundException("User Not Found");
+        }
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        UserDto userDto = modelMapper.map(userEntity, UserDto.class);
+
+        logger.info("call albums service");
+        List<AlbumResponseModel> albums = albumsServiceClient.getAlbums(userId);
+        userDto.setAlbums(albums);
         return userDto;
     }
 
